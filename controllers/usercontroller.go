@@ -26,5 +26,5 @@ func Insert(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(user)
+	return c.Status(fiber.StatusCreated).JSON(user)
 }
