@@ -15,7 +15,7 @@ func Connect(connectionString string) {
 	if dbError != nil {
 		log.Fatal(dbError)
 	}
-	log.Println("Connect to Database!")
+	log.Println("Connected to database")
 }
 
 func Migrate() {
