@@ -13,5 +13,6 @@ func main() {
 
 	app := fiber.New()
 	app.Post("/api/users", controllers.Create)
+	app.Get("/api/users", controllers.GetAll)
 	log.Fatal(app.Listen(":8080"))
 }

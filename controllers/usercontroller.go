@@ -34,5 +34,20 @@ func Create(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(user)
+	return c.Status(fiber.StatusCreated).JSON(user)
+}
+
+func GetAll(c *fiber.Ctx) error {
+	var users []models.User
+
+	record := database.Instance.Find(&users)
+	if record.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"code":    fiber.StatusInternalServerError,
+			"message": "Internal error",
+			"error":   record.Error.Error(),
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(users)
 }
