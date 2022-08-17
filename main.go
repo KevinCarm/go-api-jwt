@@ -14,6 +14,7 @@ func main() {
 	app := fiber.New()
 	app.Post("/api/users", controllers.CreateUser)
 	app.Get("/api/users", controllers.GetAllUsers)
+	app.Get("/api/users/:id", controllers.GetUserById)
 	app.Delete("/api/users/:id", controllers.DeleteUserById)
 	log.Fatal(app.Listen(":8080"))
 }

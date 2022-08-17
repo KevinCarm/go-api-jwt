@@ -66,3 +66,18 @@ func DeleteUserById(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusAccepted).JSON("User deleted successfully")
 }
+
+func GetUserById(c *fiber.Ctx) error {
+	var id string = c.Params("id")
+	var user models.User
+
+	record := database.Instance.Find(&user, id)
+	if record.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"code":    fiber.StatusInternalServerError,
+			"message": "Internal error",
+			"error":   record.Error.Error(),
+		})
+	}
+	return c.JSON(user)
+}
