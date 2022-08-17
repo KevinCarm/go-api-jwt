@@ -12,7 +12,8 @@ func main() {
 	database.Migrate()
 
 	app := fiber.New()
-	app.Post("/api/users", controllers.Create)
-	app.Get("/api/users", controllers.GetAll)
+	app.Post("/api/users", controllers.CreateUser)
+	app.Get("/api/users", controllers.GetAllUsers)
+	app.Delete("/api/users/:id", controllers.DeleteUserById)
 	log.Fatal(app.Listen(":8080"))
 }
