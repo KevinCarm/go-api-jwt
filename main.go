@@ -16,5 +16,6 @@ func main() {
 	app.Get("/api/users", controllers.GetAllUsers)
 	app.Get("/api/users/:id", controllers.GetUserById)
 	app.Delete("/api/users/:id", controllers.DeleteUserById)
+	app.Put("/api/users/:id", controllers.UpdateUser)
 	log.Fatal(app.Listen(":8080"))
 }

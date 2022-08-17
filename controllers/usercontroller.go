@@ -81,3 +81,40 @@ func GetUserById(c *fiber.Ctx) error {
 	}
 	return c.JSON(user)
 }
+
+func UpdateUser(c *fiber.Ctx) error {
+	var id string = c.Params("id")
+	var newUser models.User
+	var findUser models.User
+
+	if err := c.BodyParser(&newUser); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"code":    fiber.StatusBadRequest,
+			"message": "Internal error",
+			"error":   err.Error(),
+		})
+	}
+
+	record := database.Instance.Find(&findUser, id)
+	if record.Error != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"code":    fiber.StatusNotFound,
+			"message": "User not found",
+			"error":   record.Error.Error(),
+		})
+	}
+
+	findUser.Name = newUser.Name
+	findUser.Email = newUser.Email
+	findUser.Password = newUser.Password
+	findUser.Role = newUser.Role
+
+	err := findUser.HashPassword(findUser.Password)
+	if err != nil {
+		return err
+	}
+
+	database.Instance.Save(&findUser)
+
+	return c.Status(fiber.StatusOK).JSON(findUser)
+}
