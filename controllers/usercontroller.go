@@ -3,8 +3,48 @@ package controllers
 import (
 	"github.com/gofiber/fiber/v2"
 	"go-api-jwt/database"
+	"go-api-jwt/jwtFiles"
 	"go-api-jwt/models"
 )
+
+func login(c *fiber.Ctx) error {
+	var loginRequest models.LoginRequest
+	var user models.User
+
+	if err := c.BodyParser(&loginRequest); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"code":    fiber.StatusBadRequest,
+			"message": err.Error(),
+		})
+	}
+	//Check if email and password is correct
+	record := database.Instance.Where("email", loginRequest.Email).First(&user)
+	if record.Error != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"code":    fiber.StatusNotFound,
+			"message": "Email or password incorrect",
+		})
+	}
+
+	credentialError := user.CheckPassword(loginRequest.Password)
+	if credentialError != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"code":    fiber.StatusUnauthorized,
+			"message": "Invalid credentials",
+		})
+	}
+	// Generate TOKEN
+	tokenString, err := jwtFiles.GenerateJWT(user.Name, user.Email, user.Role)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"code":    fiber.StatusInternalServerError,
+			"message": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"token": tokenString,
+	})
+}
 
 func CreateUser(c *fiber.Ctx) error {
 	var user models.User
