@@ -30,7 +30,7 @@ func GenerateJWT(name, email, role string) (tokenString string, err error) {
 	return
 }
 
-func ValidateToken(signedToken string) (err error) {
+func ValidateToken(signedToken string) (isAdmin bool, err error) {
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&Claim{},
@@ -39,17 +39,17 @@ func ValidateToken(signedToken string) (err error) {
 		},
 	)
 	if err != nil {
-		return
+		return false, err
 	}
 
 	claims, ok := token.Claims.(*Claim)
 	if !ok {
 		err = errors.New("couldn't parse claims")
-		return
+		return false, err
 	}
 	if claims.ExpiresAt < time.Now().Local().Unix() {
 		err = errors.New("token expired")
-		return
+		return false, err
 	}
-	return
+	return claims.Role == "user_admin", err
 }

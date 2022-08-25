@@ -13,17 +13,18 @@ func main() {
 
 	app := fiber.New()
 	//User routes
-	app.Post("/api/users", controllers.CreateUser)
-	app.Get("/api/users", controllers.GetAllUsers)
-	app.Get("/api/users/:id", controllers.GetUserById)
-	app.Delete("/api/users/:id", controllers.DeleteUserById)
-	app.Put("/api/users/:id", controllers.UpdateUser)
+	go app.Post("/api/login", controllers.Login)
+	go app.Post("/api/users", controllers.CreateUser)
+	go app.Get("/api/users", controllers.GetAllUsers)
+	go app.Get("/api/users/:id", controllers.GetUserById)
+	go app.Delete("/api/users/:id", controllers.DeleteUserById)
+	go app.Put("/api/users/:id", controllers.UpdateUser)
 	//Product routes
-	app.Post("/api/products", controllers.CreateProduct)
-	app.Get("/api/products", controllers.GetAllProducts)
-	app.Get("/api/products/:id", controllers.GetProductById)
-	app.Delete("/api/products/:id", controllers.DeleteProduct)
-	app.Put("/api/products/:id", controllers.UpdateProduct)
+	go app.Post("/api/products", controllers.CreateProduct)
+	go app.Get("/api/products", controllers.GetAllProducts)
+	go app.Get("/api/products/:id", controllers.GetProductById)
+	go app.Delete("/api/products/:id", controllers.DeleteProduct)
+	go app.Put("/api/products/:id", controllers.UpdateProduct)
 	log.Println("Running server on port 8080")
 	log.Fatal(app.Listen(":8080"))
 }

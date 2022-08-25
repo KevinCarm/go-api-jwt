@@ -7,7 +7,7 @@ import (
 	"go-api-jwt/models"
 )
 
-func login(c *fiber.Ctx) error {
+func Login(c *fiber.Ctx) error {
 	var loginRequest models.LoginRequest
 	var user models.User
 
@@ -41,6 +41,7 @@ func login(c *fiber.Ctx) error {
 			"message": err.Error(),
 		})
 	}
+	//Return JWT
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"token": tokenString,
 	})
