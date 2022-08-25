@@ -51,5 +51,5 @@ func ValidateToken(signedToken string) (isAdmin bool, err error) {
 		err = errors.New("token expired")
 		return false, err
 	}
-	return claims.Role == "user_admin", err
+	return claims.Role == "role_admin", err
 }

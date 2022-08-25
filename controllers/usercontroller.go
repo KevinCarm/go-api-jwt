@@ -5,6 +5,7 @@ import (
 	"go-api-jwt/database"
 	"go-api-jwt/jwtFiles"
 	"go-api-jwt/models"
+	"strings"
 )
 
 func Login(c *fiber.Ctx) error {
@@ -80,6 +81,30 @@ func CreateUser(c *fiber.Ctx) error {
 
 func GetAllUsers(c *fiber.Ctx) error {
 	var users []models.User
+	var bearer = strings.Split(c.Get("Authorization"), " ")
+	var stringToken = bearer[1]
+
+	if stringToken == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"code":  fiber.StatusUnauthorized,
+			"error": "Request does not contain token access",
+		})
+	}
+
+	isAdmin, err := jwtFiles.ValidateToken(stringToken)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	if !isAdmin {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"code":    fiber.StatusUnauthorized,
+			"error":   "Unauthorized",
+			"message": "Authorization required",
+		})
+	}
 
 	record := database.Instance.Find(&users)
 	if record.Error != nil {
@@ -94,7 +119,7 @@ func GetAllUsers(c *fiber.Ctx) error {
 }
 
 func DeleteUserById(c *fiber.Ctx) error {
-	var id string = c.Params("id")
+	var id = c.Params("id")
 	var user models.User
 
 	record := database.Instance.Delete(&user, id)
@@ -109,7 +134,7 @@ func DeleteUserById(c *fiber.Ctx) error {
 }
 
 func GetUserById(c *fiber.Ctx) error {
-	var id string = c.Params("id")
+	var id = c.Params("id")
 	var user models.User
 
 	record := database.Instance.Find(&user, id)
@@ -124,7 +149,7 @@ func GetUserById(c *fiber.Ctx) error {
 }
 
 func UpdateUser(c *fiber.Ctx) error {
-	var id string = c.Params("id")
+	var id = c.Params("id")
 	var newUser models.User
 	var findUser models.User
 
