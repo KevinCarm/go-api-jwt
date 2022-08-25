@@ -80,7 +80,6 @@ func CreateUser(c *fiber.Ctx) error {
 
 func GetAllUsers(c *fiber.Ctx) error {
 	var users []models.User
-
 	record := database.Instance.Find(&users)
 	if record.Error != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
